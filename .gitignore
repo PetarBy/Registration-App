@@ -1,0 +1,62 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.coverage
+coverage.xml
+nosetests.xml
+
+# Flask instance folder
+instance/
+
+# Environment variables
+.env
+.env.*
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln
+*.sw?
+*.db
+*.DS_Store
+
+# MySQL and SQLite files
+*.sqlite3
+*.db
+
+# Captcha output (if you generate images locally)
+captcha/*.png
+captcha/*.jpg
+
+# Static asset builds (if you later use npm/webpack/etc.)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Docker files (if you add Docker later)
+docker-compose.override.yml
