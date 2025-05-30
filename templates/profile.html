@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Your Profile</h2>
+  <ul>
+    <li><strong>User ID:</strong> {id}</li>
+    <li><strong>Username:</strong> {username}</li>
+    <li><strong>Email:</strong> {email}</li>
+    <li><strong>Joined:</strong> {created_at}</li>
+    <li><strong>Last Updated:</strong> {updated_at}</li>
+    <li><strong>Active:</strong> {is_active}</li>
+  </ul>
+{% endblock %}
