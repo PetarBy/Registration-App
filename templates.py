@@ -1,24 +1,33 @@
+# templates.py
+
 import os
 
-# Directory where .html templates live
 TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates')
 
-def render(template_name: str, **context) -> bytes:
-    """
-    Load the given template, substitute {placeholders} via str.format(),
-    and return the result as UTF-8 bytes.
-    """
-    path = os.path.join(TEMPLATE_DIR, template_name)
+def _load_raw(name: str) -> str:
+    path = os.path.join(TEMPLATE_DIR, name)
     try:
         with open(path, 'r', encoding='utf-8') as f:
-            template = f.read()
+            return f.read()
     except FileNotFoundError:
-        raise RuntimeError(f"Template not found: {template_name}")
+        raise RuntimeError(f"Template not found: {name}")
+
+def render(template_name: str, **context) -> bytes:
+
+    raw_child = _load_raw(template_name)
+    try:
+        child_html = raw_child.format(**context)
+    except KeyError as e:
+        raise RuntimeError(f"Missing template variable: {e.args[0]} in {template_name}")
+
+    raw_base = _load_raw('base.html')
+
+    full_context = dict(context)
+    full_context['content'] = child_html
 
     try:
-        rendered = template.format(**context)
+        final_html = raw_base.format(**full_context)
     except KeyError as e:
-        missing = e.args[0]
-        raise RuntimeError(f"Missing template variable: {missing} in {template_name}")
+        raise RuntimeError(f"Missing template variable: {e.args[0]} in base.html")
 
-    return rendered.encode('utf-8')
+    return final_html.encode('utf-8')

@@ -1,3 +1,5 @@
+# server.py
+
 import os
 import base64
 import datetime
@@ -32,6 +34,29 @@ from captcha import (
 STATIC_DIR = os.path.join(os.path.dirname(__file__), 'static')
 
 
+def _nav_context(user):
+    """
+    Return a dict of navigation link placeholders based on login state.
+    If user is None → show Login/Register. Otherwise → show Profile/Settings/Logout.
+    """
+    if user:
+        return {
+            'login_link':    '',
+            'register_link': '',
+            'profile_link':  '<a href="/profile">Profile</a>',
+            'settings_link': '<a href="/account">Settings</a>',
+            'logout_link':   '<a href="/logout">Logout</a>'
+        }
+    else:
+        return {
+            'login_link':    '<a href="/login">Login</a>',
+            'register_link': '<a href="/register">Register</a>',
+            'profile_link':  '',
+            'settings_link': '',
+            'logout_link':   ''
+        }
+
+
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith('/static/'):
@@ -63,12 +88,12 @@ class Handler(BaseHTTPRequestHandler):
         return self.send_error(404)
 
     def serve_static(self):
+        # Serve files under ./static/
         rel_path = self.path[len('/static/'):].lstrip('/')
         full_path = os.path.join(STATIC_DIR, rel_path)
         if not os.path.isfile(full_path):
             return self.send_error(404)
 
-        # Basic content-type detection
         if full_path.endswith('.css'):
             content_type = 'text/css'
         elif full_path.endswith('.js'):
@@ -98,29 +123,39 @@ class Handler(BaseHTTPRequestHandler):
         user = self.current_user()
         if not user:
             return send_redirect(self, '/login')
-        body = render('home.html', username=user['username'])
+
+        nav = _nav_context(user)
+        body = render(
+            'home.html',
+            username=user['username'],
+            **nav
+        )
         return send_html(self, 200, body)
 
     def show_register(self):
+        # Generate a new CAPTCHA
         captcha_id, img_bytes = generate_captcha()
         img_b64 = base64.b64encode(img_bytes).decode('ascii')
+
+        nav = _nav_context(None)
         body = render(
             'register.html',
             captcha_id=captcha_id,
-            captcha_image=img_b64
+            captcha_image=img_b64,
+            **nav
         )
         return send_html(self, 200, body)
 
     def handle_register(self):
         form = parse_form(self)
 
-        # CAPTCHA check
+        # CAPTCHA validation
         captcha_id   = form.get('captcha_id',   [''])[0]
         captcha_code = form.get('captcha_code', [''])[0]
         if not verify_captcha(captcha_id, captcha_code):
             return send_html(self, 400, b'Invalid CAPTCHA')
 
-        # Extract and validate fields
+        # Extract and validate inputs
         username = form.get('username', [''])[0].strip()
         email    = form.get('email',    [''])[0].strip()
         password = form.get('password', [''])[0]
@@ -151,7 +186,9 @@ class Handler(BaseHTTPRequestHandler):
             conn.close()
 
     def show_login(self):
-        return send_html(self, 200, render('login.html'))
+        nav = _nav_context(None)
+        body = render('login.html', **nav)
+        return send_html(self, 200, body)
 
     def handle_login(self):
         form     = parse_form(self)
@@ -184,7 +221,9 @@ class Handler(BaseHTTPRequestHandler):
         user = self.current_user()
         if not user:
             return send_redirect(self, '/login')
-        body = render('account.html', username=user['username'])
+
+        nav = _nav_context(user)
+        body = render('account.html', username=user['username'], **nav)
         return send_html(self, 200, body)
 
     def handle_account(self):
@@ -245,6 +284,7 @@ class Handler(BaseHTTPRequestHandler):
         updated = (user['updated_at'].strftime('%Y-%m-%d %H:%M')
                    if user['updated_at'] else 'Never')
 
+        nav = _nav_context(user)
         body = render(
             'profile.html',
             id=user['id'],
@@ -252,7 +292,8 @@ class Handler(BaseHTTPRequestHandler):
             email=user['email'],
             created_at=created,
             updated_at=updated,
-            is_active='Yes' if user['is_active'] else 'No'
+            is_active='Yes' if user['is_active'] else 'No',
+            **nav
         )
         return send_html(self, 200, body)
 

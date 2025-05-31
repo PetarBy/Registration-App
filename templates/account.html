@@ -1,38 +1,32 @@
-{% extends "base.html" %}
-{% block content %}
-  <h2>Account Settings</h2>
+<h2>Account Settings</h2>
 
-  <!-- Change Nickname -->
-  <section>
-    <h3>Change Nickname</h3>
-    <form method="POST" action="/account">
-      <input type="hidden" name="action" value="nickname">
-      <label>Current Password:
-        <input name="current_password" type="password" required>
-      </label><br>
-      <label>New Nickname:
-        <input name="new_nickname" type="text" maxlength="50" required>
-      </label><br>
-      <button type="submit">Update Nickname</button>
-    </form>
-  </section>
-  <hr>
-
-  <!-- Change Password -->
-  <section>
-    <h3>Change Password</h3>
-    <form method="POST" action="/account">
-      <input type="hidden" name="action" value="password">
-      <label>Current Password:
-        <input name="current_password" type="password" required>
-      </label><br>
-      <label>New Password:
-        <input name="new_password" type="password" required>
-      </label><br>
-      <label>Confirm New Password:
-        <input name="confirm_password" type="password" required>
-      </label><br>
-      <button type="submit">Update Password</button>
-    </form>
-  </section>
-{% endblock %}
+<section>
+  <h3>Change Nickname</h3>
+  <form method="POST" action="/account">
+    <input type="hidden" name="action" value="nickname">
+    <label>Current Password:
+      <input name="current_password" type="password" required>
+    </label><br>
+    <label>New Nickname:
+      <input name="new_nickname" type="text" maxlength="50" required>
+    </label><br>
+    <button type="submit">Update Nickname</button>
+  </form>
+</section>
+<hr>
+<section>
+  <h3>Change Password</h3>
+  <form method="POST" action="/account">
+    <input type="hidden" name="action" value="password">
+    <label>Current Password:
+      <input name="current_password" type="password" required>
+    </label><br>
+    <label>New Password:
+      <input name="new_password" type="password" required>
+    </label><br>
+    <label>Confirm New Password:
+      <input name="confirm_password" type="password" required>
+    </label><br>
+    <button type="submit">Update Password</button>
+  </form>
+</section>
